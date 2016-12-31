@@ -1,0 +1,5 @@
+parameters:
+  tranz_tz_memcached.default.host: 127.0.0.1
+  tranz_tz_memcached.default.port: 11211
+  tranz_tz_memcached.sessions.host: 127.0.0.1
+  tranz_tz_memcached.sessions.port: 11211

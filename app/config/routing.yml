@@ -1,0 +1,3 @@
+kaze_fgo_stats_card_drawing:
+    resource: "@KazeFGOStatsCardDrawingBundle/Resources/config/routing.yml"
+    prefix:   /
