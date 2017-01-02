@@ -1,0 +1,20 @@
+services:
+    kaze_fgo_stats_card_drawing.service.card_drawing:
+        class: Kaze\FGOStatsCardDrawingBundle\Services\CardDrawingService
+        parent: tranz_tz_base.tzbase.service
+        arguments:
+            - "@kaze_fgo_stats_card_drawing.handler.card_drawing"
+            - "@kaze_fgo_stats_card_drawing.handler.card"
+            - "@kaze_fgo_stats_card_drawing.handler.card_pool"
+
+    kaze_fgo_stats_card_drawing.handler.card_drawing:
+        class: Kaze\FGOStatsCardDrawingBundle\Handler\CardDrawingHandler
+        parent: tranz_tz_base.tzbase.handler
+
+    kaze_fgo_stats_card_drawing.handler.card:
+        class: Kaze\FGOStatsCardDrawingBundle\Handler\CardHandler
+        parent: tranz_tz_base.tzbase.handler
+
+    kaze_fgo_stats_card_drawing.handler.card_pool:
+        class: Kaze\FGOStatsCardDrawingBundle\Handler\CardPoolHandler
+        parent: tranz_tz_base.tzbase.handler

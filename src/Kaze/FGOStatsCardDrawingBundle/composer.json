@@ -1,0 +1,11 @@
+{
+  "name": "kaze/fgo-stats-card-drawing-bundle",
+  "description": "fgo stats card drawing bundle",
+  "keywords": ["fgo", "card drawing"],
+  "type": "symfony-bundle",
+  "authors": [{"name": "fenghou"}],
+  "license": "proprietary",
+  "require": {},
+  "repositories": [],
+  "autoload": {"psr-4": {"Kaze\\FGOStatsCardDrawingBundle\\": ""}}
+}

@@ -1,0 +1,4 @@
+kaze_fgo_stats_card_drawing_local:
+  resource: "@KazeFGOStatsCardDrawingBundle/Controller/Local"
+  type: annotation
+  prefix: /

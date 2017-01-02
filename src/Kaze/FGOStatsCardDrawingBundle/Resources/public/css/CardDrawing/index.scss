@@ -1,0 +1,134 @@
+// units ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.units .unit {
+  position: relative;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background-color: #F0F0F0;
+}
+
+.units .unit .options {
+  position: relative;
+}
+
+.units .unit .options select {
+  display: inline-block;
+  width: 6em;
+}
+
+.units .unit .options .remove {
+  position: absolute;
+  top: -0.2em;
+  right: 0;
+  font-size: 1.5em;
+  color: #F08080;
+  cursor: pointer;
+}
+
+.units .unit .awards {
+  position: relative;
+  margin-top: 1em;
+}
+
+.units .unit .awards .award {
+  display: inline-block;
+  position: relative;
+  width: 6em;
+  padding: 0.5em 0.2em;
+  cursor: pointer;
+}
+
+.units .unit .awards .award img {
+  width: 100%;
+}
+
+.append_unit {
+  margin-top: 1em;
+}
+
+.append_unit button {
+  min-width: 8em;
+  margin-right: 2em;
+}
+
+.submit {
+  margin-top: 2em;
+  text-align: right;
+}
+
+.submit button {
+  min-width: 10em;
+}
+
+// units - choose card /////////////////////////////////////////////////////////////////////////////////////////////////
+.choose_card_wrapper {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 2em;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 9999;
+  overflow: hidden;
+}
+.choose_card_wrapper[data-show="true"] {
+  display: block;
+}
+
+.choose_card_wrapper .choose_card {
+  position: relative;
+  max-width: 64em;
+  margin: 0 auto;
+  padding: 1em;
+  border-radius: 0.5em;
+  background-color: #FFFFFF;
+  color: #333333;
+  overflow: hidden;
+}
+
+.choose_card .card_type {
+  margin: 1em 0;
+}
+
+.choose_card .card_type button {
+  min-width: 6em;
+  margin-right: 1em;
+}
+
+.choose_card .card_star {
+  margin: 1em 0;
+}
+
+.choose_card .card_star button {
+  min-width: 6em;
+  margin-right: 1em;
+}
+
+.choose_card .close {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+}
+
+.choose_card .cards {
+  min-height: 20em;
+  max-height: 40em;
+  overflow-y: scroll;
+}
+
+.cards .card {
+  display: inline-block;
+  position: relative;
+  width: 6em;
+  padding: 0.5em 0.2em;
+  cursor: pointer;
+}
+
+.cards .card img {
+  width: 100%;
+}
