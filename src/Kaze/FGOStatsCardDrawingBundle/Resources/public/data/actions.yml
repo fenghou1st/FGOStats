@@ -1,0 +1,7 @@
+FGOStatsCardDrawing:
+  CardDrawing:
+    index:                    /
+    get_data:                 /card-drawing/data
+    create:                   /card-drawing
+    get_cards:                /card-drawing/cards
+    get_card_pools:           /card-drawing/card-pools

@@ -1,30 +1,17 @@
 {% extends "TranzTZBaseBundle:Local:TZBase.main.html.twig" %}
 {% set resourceName = "kazefgostatscarddrawing/CardDrawing/index" %}
 
-{% block headtitle %}{{ orgName }}{% endblock %}
+{% block headtitle %}Fate / Grand Order 抽卡统计{% endblock %}
 
 {% block header %}{% endblock %}
 {% block sidebar %}{% endblock %}
 
 {% block body %}
     <div class="container">
-        <div id="actions"
-             get_data="{{ path('FGOStatsCardDrawing.CardDrawing.get_data') }}"
-             create="{{ path('FGOStatsCardDrawing.CardDrawing.create') }}"
-             get_cards="{{ path('FGOStatsCardDrawing.CardDrawing.get_cards') }}"
-             get_card_pools="{{ path('FGOStatsCardDrawing.CardDrawing.get_card_pools') }}"
-        ></div>
+        <div class="desc">标题</div>
 
-        <div class="desc">
-            抽卡统计
-        </div>
+        <div class="stats">统计数据</div>
 
-        <div class="stats">
-            统计数据
-        </div>
-
-        <div class="form simple"></div>
-
-        <div class="form full"></div>
+        <div id="record_form"></div>
     </div>
 {% endblock %}

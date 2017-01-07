@@ -3,13 +3,18 @@
 const $ = require('jquery');
 require('bootstrap');
 const moment = require('moment');
+require('moment/locale/zh-cn');
 const React = require('react');
 const ReactDOM = require('react-dom');
-
-require('bundles/tranztzbase/js/common/datetime-picker/datetime-picker.js');
+const Select = require('react-select');
+require('react-select/dist/react-select.css');
+const Datetime =require('react-datetime');
+require('react-datetime/css/react-datetime.css');
+require('animate.css');
 
 const noty = require('bundles/kazefgostatscarddrawing/js/common/noty.js');
-
+const actions = require('bundles/kazefgostatscarddrawing/js/common/actions.js')('kazefgostatscarddrawing');
+const trans = require('bundles/kazefgostatscarddrawing/js/common/translator.js')('kazefgostatscarddrawing');
 require('bundles/kazefgostatscarddrawing/css/CardDrawing/index.scss');
 
 
@@ -29,72 +34,94 @@ const CARD_STAR_5 = '5';
 const UNKNOWN_CARD_URL = '/bundles/kazefgostatscarddrawing/images/unknown_card.png';
 
 const defaultServerId = '1';
-const defaultDrawingTime = moment().format('YYYY-MM-DD HH:mm:ss');
+const defaultDrawingTime = moment();
+const defaultPoolId = null;
 
-const simple_form = $('.form.simple');
-
-let drawing_time = defaultDrawingTime;
 let card_pools = [];
 let cards = {};
 
 
 // React ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class SimpleForm extends React.Component {
+class RecordForm extends React.Component {
     constructor (props) {
         super(props);
 
         this.state = {
+            visible: true,
+            simple: true,
             serverId: defaultServerId,
             drawingTime: defaultDrawingTime,
-            poolId: null,
+            poolId: defaultPoolId,
             units: {0: createUnitState(UNIT_TYPE_ONE_TIME)},
-            maxUnitId: 0
+            maxUnitId: 0,
+            pools: []
         };
+
+        this.servers = [
+            {value: '1', label: 'B站（安卓）'},
+            {value: '2', label: 'B站（iOS）'},
+            {value: '3', label: '九游'},
+            {value: '4', label: '百度'},
+            {value: '5', label: '豌豆荚'}
+        ];
+    }
+
+    reset (visible) {
+        if (typeof visible === 'undefined') visible = true;
+
+        const state = {
+            visible: visible,
+            simple: this.state.simple,
+            serverId: defaultServerId,
+            drawingTime: defaultDrawingTime,
+            poolId: defaultPoolId,
+            units: {0: createUnitState(UNIT_TYPE_ONE_TIME)},
+            maxUnitId: 0,
+            pools: []
+        };
+
+        this.setState(state);
     }
 
     render () {
+        if (!this.state.visible) return;
+
         return (
-            <form className="form-horizontal" role="form" id="form_crateCardDrawing">
-                <div className="form-group">
-                    <label className="col-sm-2 control-label" htmlFor="form_crateCardDrawing_server">
-                        服务器
-                    </label>
+            <form role="form">
+                <div className="row">
+                    <label className="col-sm-2">服务器</label>
                     <div className="col-sm-10">
-                        <select id="form_crateCardDrawing_server" className="form-control"
-                                name="server" value={this.state.serverId} onChange={this.onChangeServer.bind(this)}>
-                            <option value="1">B站（安卓）</option>
-                            <option value="2">B站（iOS）</option>
-                            <option value="3">九游</option>
-                            <option value="4">百度</option>
-                            <option value="5">豌豆荚</option>
-                        </select>
+                        <Select
+                            options={this.servers} value={this.state.serverId}
+                            placeholder="" searchable={false} clearable={false}
+                            onChange={this.onChangeServer.bind(this)}
+                        />
                     </div>
                 </div>
-                <div className="form-group">
-                    <label className="col-sm-2 control-label" htmlFor="form_crateCardDrawing_drawingTime">
-                        抽卡时间
-                    </label>
+                <div  className="row">
+                    <label className="col-sm-2">抽卡时间</label>
                     <div className="col-sm-10">
-                        <div className="input-group date datetime_picker">
-                            <input type="text" id="form_crateCardDrawing_drawingTime" className="form-control"
-                                   name="drawingTime"/>
-                            <span className="input-group-addon"><span className="glyphicon glyphicon-calendar"/></span>
-                        </div>
+                        <Datetime
+                            value={this.state.drawingTime}
+                            dateFormat="YYYY-MM-DD" timeFormat="HH:mm"
+                            viewMode="time"
+                            onChange={this.onChangeDrawingTime.bind(this)}
+                        />
                     </div>
                 </div>
-                <div className="form-group">
-                    <label className="col-sm-2 control-label" htmlFor="form_crateCardDrawing_pool">
-                        卡池
-                    </label>
+                <div className="row">
+                    <label className="col-sm-2">卡池</label>
                     <div className="col-sm-10">
-                        <select id="form_crateCardDrawing_pool" className="form-control"
-                                name="pool" onChange={this.onChangePool.bind(this)}>
-                        </select>
+                        <Select
+                            options={this.state.pools} value={this.state.poolId}
+                            placeholder="" searchable={false} clearable={false}
+                            onChange={this.onChangePool.bind(this)}
+                        />
                     </div>
                 </div>
-                <div className="form-group">
-                    <SimpleUnits units={this.state.units}
+                <div className="row">
+                    <RecordUnits units={this.state.units}
                                  addUnit={this.onAddUnit.bind(this)}
                                  removeUnit={this.onRemoveUnit.bind(this)}
                                  changeUnitType={this.onChangeUnitType.bind(this)}
@@ -108,20 +135,28 @@ class SimpleForm extends React.Component {
     }
 
     componentDidMount () {
-        const self = $(ReactDOM.findDOMNode(this));
-
-        self.find('.datetime_picker').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
-        self.find('input[name="drawingTime"]').val(defaultDrawingTime);
-
+        // const thisNode = $(ReactDOM.findDOMNode(this));
         getCardPools(this);
     }
 
-    onChangeServer (event) {
-        this.setState({serverId: event.target.value});
+    onChangeServer (option) {
+        this.setState({serverId: option.value});
     }
 
-    onChangePool (event) {
-        this.setState({poolId: event.target.value});
+    onChangeDrawingTime (drawingTime) {
+        if (typeof drawingTime === 'string') drawingTime = moment(drawingTime);
+
+        const result = this.getPoolList(drawingTime);
+
+        this.setState({drawingTime: drawingTime, pools: result[0], poolId: result[1]});
+    }
+
+    updatePoolList () {
+        this.onChangeDrawingTime(this.state.drawingTime);
+    }
+
+    onChangePool (option) {
+        this.setState({poolId: option.value});
     }
 
     onAddUnit (type) {
@@ -167,29 +202,31 @@ class SimpleForm extends React.Component {
 
         const data = {
             serverId: this.state.serverId,
-            drawingTime: drawing_time,
+            drawingTime: this.state.drawingTime.format('YYYY-MM-DD HH:mm:ss'),
             poolId: this.state.poolId,
             masterLevel: null,
             units: units
         };
 
-        submit(data, this.reset.bind(this));
+        submit(data, this);
     }
 
-    reset () {
-        const state = {
-            serverId: defaultServerId,
-            drawingTime: defaultDrawingTime,
-            poolId: null,
-            units: {0: createUnitState(UNIT_TYPE_ONE_TIME)},
-            maxUnitId: 0
-        };
-        this.setState(state);
+    getPoolList (drawingTime) {
+        const pools = [];
+        card_pools.forEach((pool) => {
+            if ((pool.beginTime === null || moment(pool.beginTime).isBefore(drawingTime)) &&
+                (pool.endTime === null || moment(pool.endTime).isAfter(drawingTime)))
+                pools.push({value: pool.id, label: pool.name});
+        });
+
+        const defaultPoolId = pools.length > 0 ? pools[0].value : null;
+
+        return [pools, defaultPoolId];
     }
 }
 
 
-class SimpleUnits extends React.Component {
+class RecordUnits extends React.Component {
     constructor (props) {
         super(props);
 
@@ -203,7 +240,7 @@ class SimpleUnits extends React.Component {
     render () {
         const units = [];
         Object.keys(this.props.units).forEach((id) => {
-            units.push(<SimpleUnit key={id}
+            units.push(<RecordUnit key={id}
                                    unitId={id}
                                    unitState={this.props.units[id]}
                                    removeUnit={this.props.removeUnit}
@@ -213,9 +250,7 @@ class SimpleUnits extends React.Component {
 
         return (
             <div className="simple_units">
-                <label className="col-sm-2 control-label">
-                    抽卡记录
-                </label>
+                <label className="col-sm-2">抽卡记录</label>
                 <div className="col-sm-10 units">
                     {units}
                 </div>
@@ -245,10 +280,14 @@ class SimpleUnits extends React.Component {
 }
 
 
-class SimpleUnit extends React.Component {
+class RecordUnit extends React.Component {
     constructor (props) {
         super(props);
-        this.onChangeType = this.onChangeType.bind(this);
+
+        this.types = [
+            {value: UNIT_TYPE_ONE_TIME, label: '单抽'},
+            {value: UNIT_TYPE_TEN_TIMES, label: '十连'}
+        ];
     }
 
     render () {
@@ -270,11 +309,11 @@ class SimpleUnit extends React.Component {
         return (
             <div className="unit">
                 <div className="options">
-                    <select className="form-control" name="unit_type"
-                            value={this.props.unitState.type} onChange={this.onChangeType}>
-                        <option value={UNIT_TYPE_ONE_TIME}>单抽</option>
-                        <option value={UNIT_TYPE_TEN_TIMES}>十连</option>
-                    </select>
+                    <Select
+                        options={this.types} value={this.props.unitState.type}
+                        placeholder="" searchable={false} clearable={false}
+                        onChange={this.onChangeType.bind(this)}
+                    />
                     <div className="remove" onClick={() => this.props.removeUnit(this.props.unitId)}>
                         <i className="fa fa-minus-circle"/>
                     </div>
@@ -286,8 +325,8 @@ class SimpleUnit extends React.Component {
         );
     }
 
-    onChangeType (event) {
-        this.props.changeUnitType(this.props.unitId, event.target.value);
+    onChangeType (option) {
+        this.props.changeUnitType(this.props.unitId, option.value);
     }
 }
 
@@ -449,9 +488,9 @@ function createAwardState(cardId) {
 }
 
 
-function getCardPools(simpleForm) {
+function getCardPools(formComponent) {
     $.ajax({
-        url: $('#actions').attr('get_card_pools'),
+        url: actions('FGOStatsCardDrawing.CardDrawing.get_card_pools'),
         type: 'GET',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
@@ -459,9 +498,9 @@ function getCardPools(simpleForm) {
 
             if (data['resultStatus'] && data['resultStatus'] === true && data['result'] && data['result']['result']) {
                 if (__DEV__) console.log('get_card_pools success, count:' + data['result']['result'].length);
-                card_pools = data['result']['result'];
-                updateCardPoolList(simpleForm);
-                tryUpdateCardPoolList(simpleForm);
+                const cardPools = data['result']['result'];
+                setCardPools(cardPools);
+                formComponent.updatePoolList();
             }
             else if (data['resultDisplayMsg']) {
                 if (__DEV__) console.log('get_card_pools failed, with display message');
@@ -482,7 +521,7 @@ function getCardPools(simpleForm) {
 
 function getCards() {
     $.ajax({
-        url: $('#actions').attr('get_cards'),
+        url: actions('FGOStatsCardDrawing.CardDrawing.get_cards'),
         type: 'GET',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
@@ -492,7 +531,7 @@ function getCards() {
                 if (__DEV__) console.log('get_cards success, count:' + data['result']['result'].length);
                 const cardList = data['result']['result'];
                 setCards(cardList);
-                ReactDOM.render(<SimpleForm />, $('.form.simple')[0]);
+                ReactDOM.render(<RecordForm />, $('#record_form')[0]);
             }
             else if (data['resultDisplayMsg']) {
                 if (__DEV__) console.log('get_cards failed, with display message');
@@ -511,9 +550,9 @@ function getCards() {
 }
 
 
-function submit(data, reset) {
+function submit(data, formComponent) {
     $.ajax({
-        url: $('#actions').attr('create'),
+        url: actions('FGOStatsCardDrawing.CardDrawing.create'),
         type: 'POST',
         data: data,
         dataType: 'json',
@@ -522,8 +561,7 @@ function submit(data, reset) {
 
             if (data['resultStatus'] && data['resultStatus'] === true && data['result'] && data['result']['groupId']) {
                 if (__DEV__) console.log('submit success, groupId:' + data['result']['groupId']);
-                simple_form.hide();
-                reset();
+                formComponent.reset(false);
                 noty('提交抽卡记录成功！', 'success');
             }
             else if (data['resultDisplayMsg']) {
@@ -543,46 +581,16 @@ function submit(data, reset) {
 }
 
 
-function updateCardPoolList(simpleForm) {
-    const form_create_pool = $('#form_crateCardDrawing_pool');
-
-    form_create_pool.html('');
-
-    for (let i = card_pools.length - 1; i >= 0; --i) {
-        const pool = card_pools[i];
-        if ((pool.beginTime === null || moment(pool.beginTime).isBefore(drawing_time)) &&
-            (pool.endTime === null || moment(pool.endTime).isAfter(drawing_time)))
-            form_create_pool.append('<option value="' + pool.id + '">' + pool.name + '</option>');
-    }
-
-    const options = form_create_pool.find('option');
-    if (options.length > 0)
-    {
-        const poolId = options[0].value;
-        form_create_pool.val(poolId);
-        simpleForm.setState({poolId: poolId});
-    }
-}
-
-
-function tryUpdateCardPoolList(simpleForm) {
-    setInterval(function () {
-        const form_create_drawing_time = $('#form_crateCardDrawing_drawingTime');
-
-        let curr_drawing_time = form_create_drawing_time.val();
-        if (curr_drawing_time !== drawing_time) {
-            if (__DEV__) console.log("drawing time change: " + curr_drawing_time);
-            drawing_time = curr_drawing_time;
-            updateCardPoolList(simpleForm);
-        }
-    }, 200);
-}
-
-
 function setCards(cardList) {
     cardList.forEach((card) => {
         cards[card.id] = card;
     });
+}
+
+
+function setCardPools(cardPools) {
+    card_pools = cardPools;
+    card_pools.reverse();
 }
 
 

@@ -51,6 +51,11 @@ module.exports = {
             loader: 'json'
         },
         {
+            test: /\.(yaml|yml)$/,
+            include: sourceDirs,
+            loader: 'json!yaml'
+        },
+        {
             test: /\.(png|jpg|gif)$/,
             include: sourceAndLibDirs,
             loader: 'url?limit=8192&name=./images/[hash].[ext]'
