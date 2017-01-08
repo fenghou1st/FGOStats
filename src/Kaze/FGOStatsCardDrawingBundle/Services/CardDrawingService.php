@@ -57,6 +57,12 @@ class CardDrawingService extends TZBaseService
     }
 
 
+    public function getStats(): array
+    {
+        return $this->handler->getStats();
+    }
+
+
     public function getAllCards(): array
     {
         return $this->cardHandler->getAll();
@@ -89,7 +95,7 @@ class CardDrawingService extends TZBaseService
             throw new ServiceException('CardDrawingService.checkCreateParams: Invalid parameters',
                 ExceptionConst::INVALID_PARAMS);
 
-        foreach ($params['units'] as $unit)
+        foreach ($params['units'] as &$unit)
         {
             if (empty($unit['type']) ||
                 !isset($unit['costCharms']) || !is_numeric($unit['costCharms']) ||
@@ -98,14 +104,27 @@ class CardDrawingService extends TZBaseService
                 throw new ServiceException('CardDrawingService.checkCreateParams: Invalid parameters',
                     ExceptionConst::INVALID_PARAMS);
 
-            if (!is_array($unit['awards']) || count($unit['awards']) <= 0)
-                throw new ServiceException('CardDrawingService.checkCreateParams: Invalid parameters',
-                    ExceptionConst::INVALID_PARAMS);
-
-            foreach ($unit['awards'] as $award)
-                if (empty($award) && $award !== null)
+            $type = (int) $unit['type'];
+            switch ($type)
+            {
+                case Constants::UNIT_TYPE_ONE_TIME:
+                    if (!is_array($unit['awards']) || count($unit['awards']) !== 1)
+                        throw new ServiceException('CardDrawingService.checkCreateParams: Invalid parameters',
+                            ExceptionConst::INVALID_PARAMS);
+                    break;
+                case Constants::UNIT_TYPE_TEN_TIMES:
+                    if (!is_array($unit['awards']) || count($unit['awards']) !== 10)
+                        throw new ServiceException('CardDrawingService.checkCreateParams: Invalid parameters',
+                            ExceptionConst::INVALID_PARAMS);
+                    break;
+                default:
                     throw new ServiceException('CardDrawingService.checkCreateParams: Invalid parameters',
                         ExceptionConst::INVALID_PARAMS);
+            }
+
+            foreach ($unit['awards'] as &$award)
+                if (empty($award))
+                    $award = Constants::CARD_ID_UNKNOWN;
         }
     }
 }

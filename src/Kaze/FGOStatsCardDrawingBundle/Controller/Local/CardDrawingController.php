@@ -49,6 +49,26 @@ class CardDrawingController extends TZBaseController
 
 
     /**
+     * @Annotations\Get("/card-drawing/stats", name="FGOStatsCardDrawing.CardDrawing.get_stats")
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getStatsAction(Request $request)
+    {
+        try
+        {
+            $result = $this->getCardDrawingService()->getStats();
+            return $this->renderReturn($result);
+        }
+        catch (\Exception $e)
+        {
+            return $this->renderExceptionReturn($e);
+        }
+    }
+
+
+    /**
      * @Annotations\Post("/card-drawing", name="FGOStatsCardDrawing.CardDrawing.create")
      *
      * @param Request $request

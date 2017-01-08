@@ -142,4 +142,72 @@ class CardDrawingHandler extends TZBaseHandler
 
         return $queryResult;
     }
+
+
+    public function getStats(): array
+    {
+        $sqlDrawingCnt = 'SELECT' .
+            ' g.server_id AS serverId,' .
+            ' g.pool_id AS poolId,' .
+            ' COUNT(*) AS drawingCnt' .
+            ' FROM card_drawing_group AS g' .
+            ' LEFT JOIN card_drawing_unit AS u ON g.id = u.group_id AND u.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' LEFT JOIN card_drawing_award AS a ON u.id = a.unit_id AND a.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' LEFT JOIN card AS c ON a.card_id = c.id AND c.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' WHERE g.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' GROUP BY g.server_id, g.pool_id';
+
+        $sqlCardCnt = 'SELECT' .
+            ' g.server_id AS serverId,' .
+            ' g.pool_id AS poolId,' .
+            ' a.card_id cardId,' .
+            ' c.type cardType,' .
+            ' c.star cardStar,' .
+            ' COUNT(*) AS cardCnt' .
+            ' FROM card_drawing_group AS g' .
+            ' LEFT JOIN card_drawing_unit AS u ON g.id = u.group_id AND u.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' LEFT JOIN card_drawing_award AS a ON u.id = a.unit_id AND a.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' LEFT JOIN card AS c ON a.card_id = c.id AND c.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' WHERE g.is_deleted = \'' . TZBaseHandlerConstant::IS_NOT_DELETED . '\'' .
+            ' AND c.star IN (4, 5)'.
+            ' GROUP BY g.server_id, g.pool_id, a.card_id';
+
+        $entityManager = $this->getQueryBuilder()->getQueryBuilder()->getEntityManager();
+        $conn = $entityManager->getConnection();
+
+        $stmt = $conn->executeQuery($sqlDrawingCnt);
+        $resultDrawingCnt = $stmt->fetchAll();
+
+        $stmt = $conn->executeQuery($sqlCardCnt);
+        $resultCardCnt = $stmt->fetchAll();
+
+        $stats = [];
+        foreach ($resultDrawingCnt as $result)
+        {
+            $serverId = $result['serverId'];
+            $poolId = $result['poolId'];
+            $drawingCnt = $result['drawingCnt'];
+            $stats[$serverId][$poolId]['drawingCnt'] = $drawingCnt;
+        }
+
+        foreach ($resultCardCnt as $result)
+        {
+            $serverId = $result['serverId'];
+            $poolId = $result['poolId'];
+            $cardId = $result['cardId'];
+            $cardType = $result['cardType'];
+            $cardStar = $result['cardStar'];
+            $cardCnt = $result['cardCnt'];
+
+            $stats[$serverId][$poolId]['cards'][$cardId] = [
+                'id' => $cardId,
+                'type' => $cardType,
+                'star' => $cardStar,
+                'cnt' => $cardCnt,
+                'rate' => $cardCnt / $stats[$serverId][$poolId]['drawingCnt'],
+            ];
+        }
+
+        return $stats;
+    }
 }

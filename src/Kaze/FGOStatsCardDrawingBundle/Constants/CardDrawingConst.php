@@ -28,4 +28,6 @@ class CardDrawingConst
     const CARD_CLASS_BERSERKER      = 8;
     const CARD_CLASS_RULER          = 9;
     const CARD_CLASS_AVENGER        = 10;
+
+    const CARD_ID_UNKNOWN           = -1;
 }
