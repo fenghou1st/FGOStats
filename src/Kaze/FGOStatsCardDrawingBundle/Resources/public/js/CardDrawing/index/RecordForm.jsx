@@ -23,58 +23,46 @@ import {RecordUnits} from './RecordUnits.jsx'
 
 class RecordForm extends React.Component {
     /**
-     * @param props object      {cards: {}, cardPools: []}
+     * @param props object      {cards: {}, cardPools: [], onRecordsSubmitted: callback}
      */
     constructor (props) {
         super(props);
 
         this.state = {
-            visible: true,
             simple: true,
             serverId: Constants.defaultServerId,
             drawingTime: Constants.defaultDrawingTime,
             poolId: Constants.defaultPoolId,
             units: {0: createUnitState(Constants.UNIT_TYPE_ONE_TIME)},
             maxUnitId: 0,
-            pools: []
+            currPools: []
         };
-
-        this.servers = [
-            {value: '1', label: 'B站（安卓）'},
-            {value: '2', label: 'B站（iOS）'},
-            {value: '3', label: '九游'},
-            {value: '4', label: '百度'},
-            {value: '5', label: '豌豆荚'}
-        ];
     }
 
-    reset (visible) {
-        if (typeof visible === 'undefined') visible = true;
-
+    reset () {
         const state = {
-            visible: visible,
             simple: this.state.simple,
             serverId: Constants.defaultServerId,
             drawingTime: Constants.defaultDrawingTime,
             poolId: Constants.defaultPoolId,
             units: {0: createUnitState(Constants.UNIT_TYPE_ONE_TIME)},
             maxUnitId: 0,
-            pools: []
+            currPools: []
         };
 
         this.setState(state);
+
+        this.props.onRecordsSubmitted();
     }
 
     render () {
-        if (!this.state.visible) return null;
-
         return (
-            <form role="form">
+            <form role="form" className="record_form">
                 <div className="row">
                     <label className="col-sm-2">服务器</label>
                     <div className="col-sm-10">
                         <Select
-                            options={this.servers} value={this.state.serverId}
+                            options={Constants.servers} value={this.state.serverId}
                             placeholder="" searchable={false} clearable={false}
                             onChange={this.onChangeServer.bind(this)}
                         />
@@ -95,7 +83,7 @@ class RecordForm extends React.Component {
                     <label className="col-sm-2">卡池</label>
                     <div className="col-sm-10">
                         <Select
-                            options={this.state.pools} value={this.state.poolId}
+                            options={this.state.currPools} value={this.state.poolId}
                             placeholder="" searchable={false} clearable={false}
                             onChange={this.onChangePool.bind(this)}
                         />
@@ -130,7 +118,7 @@ class RecordForm extends React.Component {
 
         const result = this.getPoolList(drawingTime);
 
-        this.setState({drawingTime: drawingTime, pools: result[0], poolId: result[1]});
+        this.setState({drawingTime: drawingTime, currPools: result[0], poolId: result[1]});
     }
 
     onChangePool (option) {
@@ -197,16 +185,16 @@ class RecordForm extends React.Component {
     }
 
     getPoolList (drawingTime) {
-        const pools = [];
+        const currPools = [];
         this.props.cardPools.forEach((pool) => {
             if ((pool.beginTime === null || moment(pool.beginTime).isBefore(drawingTime)) &&
                 (pool.endTime === null || moment(pool.endTime).isAfter(drawingTime)))
-                pools.push({value: pool.id, label: pool.name});
+                currPools.push({value: pool.id, label: pool.name});
         });
 
-        const defaultPoolId = pools.length > 0 ? pools[0].value : null;
+        const defaultPoolId = currPools.length > 0 ? currPools[0].value : null;
 
-        return [pools, defaultPoolId];
+        return [currPools, defaultPoolId];
     }
 }
 
@@ -234,21 +222,23 @@ function submit(data, formComponent) {
 
             if (data['resultStatus'] && data['resultStatus'] === true && data['result'] && data['result']['groupId']) {
                 if (__DEV__) console.log('submit success, groupId:' + data['result']['groupId']);
-                formComponent.reset(false);
-                noty('提交抽卡记录成功！', 'success');
+                noty('提交抽卡记录成功！即将进入统计页面……', 'success', 3000);
+                setTimeout(function () {
+                    formComponent.reset(false);
+                }, 2000)
             }
             else if (data['resultDisplayMsg']) {
                 if (__DEV__) console.log('submit failed, with display message');
-                noty('提交抽卡记录失败: ' + data['resultDisplayMsg'], 'error');
+                noty('提交抽卡记录失败: ' + data['resultDisplayMsg'], 'error', 3000);
             }
             else {
                 if (__DEV__) console.log('submit failed, without display message');
-                noty('提交抽卡记录失败', 'error');
+                noty('提交抽卡记录失败', 'error', 3000);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             if (__DEV__) console.log('submit error: state: ' + textStatus + ', error: ' + errorThrown);
-            noty('提交抽卡记录失败', 'error');
+            noty('提交抽卡记录失败', 'error', 3000);
         }
     });
 }

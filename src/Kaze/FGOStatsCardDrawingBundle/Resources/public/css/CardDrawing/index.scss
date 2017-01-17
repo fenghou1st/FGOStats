@@ -1,13 +1,56 @@
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// react container /////////////////////////////////////////////////////////////////////////////////////////////////////
+#react .header {
+  position: relative;
+  height: 6em;
+  background-color: #F8F8F8;
+}
+
+.header .title {
+  padding: 0.5em 1.75em;
+  font-size: 1.142857143em;
+  font-weight: bold;
+}
+
+.header .desc {
+  padding: 0 2em;
+  color: #999999;
+}
+
+.header .contact {
+  padding: 0 1em;
+  font-size: 0.857142857em;
+  text-align: right;
+  color: #AAAAAA;
+}
+
+.header .actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 4em;
+  line-height: 4em;
+}
+
+.header .actions button {
+  min-width: 6em;
+  margin-right: 1em;
+}
+
 // record form /////////////////////////////////////////////////////////////////////////////////////////////////////////
-#record_form form {
+form.record_form {
   margin: 2em 0;
 }
 
-#record_form .row {
+.record_form .row {
   min-height: 5em;
 }
 
-#record_form .rdtPicker {
+.record_form .rdtPicker {
   box-shadow: 0 0 12px #e2e2e2;
 }
 
@@ -151,4 +194,53 @@
 
 .cards .card img {
   width: 100%;
+}
+
+// stats ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.stats form {
+  margin: 2em 0;
+}
+
+.stats .row {
+  min-height: 5em;
+}
+
+.stats .row button {
+  min-width: 6em;
+  margin-right: 1em;
+}
+
+.stats_cards {
+  background-color: #F0F0F0;
+}
+
+.stats_cards .stats_card {
+  display: inline-block;
+  width: 18em;
+  height: 6em;
+  margin: 1em;
+}
+
+.stats_card img {
+  display: inline-block;
+  height: 100%;
+}
+
+.stats_card .rate_desc {
+  display: inline-block;
+  width: 11em;
+  padding-left: 1em;
+}
+
+.rate_desc .rate span {
+  color: #008000;
+}
+
+.rate_desc .stones {
+  font-size: 0.857142857em;
+  color: #999999;
+}
+
+.rate_desc .stones span {
+  font-weight: bold;
 }

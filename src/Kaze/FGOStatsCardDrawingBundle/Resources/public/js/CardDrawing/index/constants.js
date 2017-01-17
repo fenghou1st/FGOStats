@@ -3,6 +3,14 @@ require('moment/locale/zh-cn');
 
 
 exports.Constants = {
+    servers: [
+        {value: '1', label: 'B站（安卓）'},
+        {value: '2', label: 'B站（iOS）'},
+        {value: '3', label: '九游'},
+        {value: '4', label: '百度'},
+        {value: '5', label: '豌豆荚'}
+    ],
+
     UNIT_TYPE_ONE_TIME:     '1',
     UNIT_TYPE_TEN_TIMES:    '2',
 
