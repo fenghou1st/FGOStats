@@ -48,10 +48,10 @@ class CardStats extends React.Component {
     }
 
     getCardInfo (cardId) {
-        if (cardId === null || cardId <= 0 || cardId >= Object.keys(this.props.cards).length)
-            return {cardId: null, cardUrl: Constants.UNKNOWN_CARD_URL};
-        else
+        if (cardId in this.props.cards)
             return {cardId: cardId, cardUrl: this.props.cards[cardId].url};
+        else
+            return {cardId: null, cardUrl: Constants.UNKNOWN_CARD_URL};
     }
 }
 

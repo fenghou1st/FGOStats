@@ -50,10 +50,10 @@ class Award extends React.Component {
 // Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function createAwardState(cards, cardId) {
-    if (cardId === null || cardId <= 0 || cardId >= Object.keys(cards).length)
-        return {cardId: null, cardUrl: Constants.UNKNOWN_CARD_URL};
-    else
+    if (cardId in cards)
         return {cardId: cardId, cardUrl: cards[cardId].url};
+    else
+        return {cardId: null, cardUrl: Constants.UNKNOWN_CARD_URL};
 }
 
 
