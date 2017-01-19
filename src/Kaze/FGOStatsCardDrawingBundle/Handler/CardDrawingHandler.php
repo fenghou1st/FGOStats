@@ -206,6 +206,28 @@ class CardDrawingHandler extends TZBaseHandler
                 'cnt' => $cardCnt,
                 'rate' => $cardCnt / $stats[$serverId][$poolId]['drawingCnt'],
             ];
+
+            $stats[$serverId][$poolId]['cardCounts'][$cardType][$cardStar] =
+                ($stats[$serverId][$poolId]['cardCounts'][$cardType][$cardStar] ?? 0) + $cardCnt;
+        }
+
+        foreach ($stats as &$serverStats)
+        {
+            foreach ($serverStats as &$poolStats)
+            {
+                $drawingCnt = $poolStats['drawingCnt'];
+
+                foreach ($poolStats['cardCounts'] as &$cardTypeStats)
+                {
+                    foreach ($cardTypeStats as $cardStar => &$cardCount)
+                    {
+                        $cardCount = [
+                            'count' => $cardCount,
+                            'rate' => $cardCount / $drawingCnt,
+                        ];
+                    }
+                }
+            }
         }
 
         return $stats;
