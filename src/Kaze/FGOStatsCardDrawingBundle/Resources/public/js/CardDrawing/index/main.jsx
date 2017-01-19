@@ -49,7 +49,8 @@ class ReactContainer extends React.Component {
                     <div className="desc">为获得足够准确的概率，劳烦各位 Master 提交一下您的抽卡记录，谢啦～</div>
                     <div className="contact">若遇到问题请发邮件到
                         <a href="mailto:fenghou1st@gmail.com">fenghou1st@gmail.com</a>
-                        {/*，或回复<a href="http://baidu.com/">此帖</a>*/}
+                        ，或回复
+                        <a href="http://bbs.ngacn.cc/read.php?tid=10835777" target="_blank">此帖</a>
                     </div>
                     <div className="actions">
                         <button type="button"
