@@ -187,7 +187,7 @@ class RecordForm extends React.Component {
     getPoolList (drawingTime) {
         const currPools = [];
         this.props.cardPools.forEach((pool) => {
-            if ((pool.beginTime === null || moment(pool.beginTime).isBefore(drawingTime)) &&
+            if ((pool.beginTime === null || moment(pool.beginTime).isSameOrBefore(drawingTime)) &&
                 (pool.endTime === null || moment(pool.endTime).isAfter(drawingTime)))
                 currPools.push({value: pool.id, label: pool.name});
         });
