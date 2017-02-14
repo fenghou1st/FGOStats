@@ -34,8 +34,8 @@
     "jms/serializer-bundle": "^1.1",
     "leaseweb/memcache-bundle": "^2.1",
 
-    "tranzvision/tzbase-bundle"                   : "dev-master",
-    "tranzvision/tzutilities-bundle"              : "dev-master"
+    "tranzvision/tzbase-bundle"                   : "*",
+    "tranzvision/tzutilities-bundle"              : "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7",
@@ -43,8 +43,7 @@
     "symfony/phpunit-bridge": "^3.0"
   },
   "repositories": [
-    {"type": "vcs", "url": "https://github.com/fenghou1st/TZBaseBundle.git"},
-    {"type": "vcs", "url": "https://github.com/fenghou1st/TZUtilitiesBundle.git"}
+    {"type": "composer", "url": "http://satis.kazesoft.com/"}
   ],
   "scripts": {
     "symfony-scripts": [
