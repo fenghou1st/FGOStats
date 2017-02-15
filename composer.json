@@ -34,8 +34,8 @@
     "jms/serializer-bundle": "^1.1",
     "leaseweb/memcache-bundle": "^2.1",
 
-    "tranzvision/tzbase-bundle"                   : "*",
-    "tranzvision/tzutilities-bundle"              : "*"
+    "tranzvision/tzbase-bundle"                   : "dev-master",
+    "tranzvision/tzutilities-bundle"              : "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7",
@@ -43,7 +43,9 @@
     "symfony/phpunit-bridge": "^3.0"
   },
   "repositories": [
-    {"type": "composer", "url": "http://satis.kazesoft.com/"}
+    {"type": "composer", "url": "http://satis.kazesoft.com/public"},
+    {"type": "composer", "url": "http://satis.kazesoft.com/private"},
+    {"packagist": false}
   ],
   "scripts": {
     "symfony-scripts": [
@@ -84,5 +86,8 @@
       "file": "app/config/parameters.yml"
     },
     "branch-alias": null
+  },
+  "config": {
+    "secure-http": false
   }
 }
